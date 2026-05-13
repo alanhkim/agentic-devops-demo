@@ -311,6 +311,23 @@ The chaos engineering workflow uses [GitHub Agentic Workflows](https://github.co
 gh extension install github/gh-aw
 ```
 
+### Required Secret: `COPILOT_GITHUB_TOKEN`
+
+The workflow requires a `COPILOT_GITHUB_TOKEN` repository secret to authenticate the gh-aw engine with GitHub Copilot for AI inference.
+
+**Create a GitHub Personal Access Token (PAT):**
+
+1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**
+2. Create a new fine-grained token with **Resource owner** set to your user account, not the organization
+3. Under **Account permissions**, set **Copilot Requests** to **Read**
+4. Add it as a repository secret named `COPILOT_GITHUB_TOKEN`:
+
+```bash
+gh secret set COPILOT_GITHUB_TOKEN
+```
+
+> **Note**: The `COPILOT_GITHUB_TOKEN` is only used for Copilot AI inference and must belong to a user with an active Copilot license and inference access. All GitHub API operations (creating PRs, writing issues) are handled by the workflow's built-in `GITHUB_TOKEN`, which automatically carries `contents: write`, `issues: write`, and `pull-requests: write` permissions from the job's `permissions` block.
+
 ### Trigger via GitHub Issue
 
 Create an issue with the `chaos-engineering` label to specify a scenario:
