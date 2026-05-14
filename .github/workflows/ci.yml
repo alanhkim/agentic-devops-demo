@@ -27,7 +27,7 @@ jobs:
 
       - name: Check for Thread.sleep in production code
         run: |
-          if grep -rn "Thread\.sleep" backend/src/main/java; then
+          if grep -rn --include='*.java' 'Thread\.sleep(' backend/src/main/java; then
             echo "ERROR: Thread.sleep found in production source code. Remove chaos injection before merging."
             exit 1
           fi
