@@ -4,14 +4,18 @@ param appResourceGroupId string
 @description('Name of the backend container app to monitor')
 param backendContainerAppName string
 
+@description('Name of the frontend container app to monitor')
+param frontendContainerAppName string
+
 @description('Environment name for naming')
 param environmentName string
 
 @description('Location of the container apps (for targetResourceRegion)')
 param appLocation string = 'eastus2'
 
-// Construct the backend container app resource ID
+// Construct the container app resource IDs
 var backendResourceId = '${appResourceGroupId}/providers/Microsoft.App/containerApps/${backendContainerAppName}'
+var frontendResourceId = '${appResourceGroupId}/providers/Microsoft.App/containerApps/${frontendContainerAppName}'
 
 // Action Group — SRE Agent picks up alerts via managed resources
 resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
@@ -127,6 +131,41 @@ resource latencyAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
           metricNamespace: 'microsoft.app/containerapps'
           operator: 'GreaterThan'
           threshold: 3000
+          timeAggregation: 'Average'
+          criterionType: 'StaticThresholdCriterion'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: actionGroup.id
+      }
+    ]
+  }
+}
+
+// Alert: High response time on the frontend container app
+resource frontendLatencyAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'alert-frontend-latency-${environmentName}'
+  location: 'global'
+  properties: {
+    description: 'Frontend average response time elevated — may indicate slow page rendering, CDN issues, or upstream backend latency'
+    severity: 3
+    enabled: true
+    scopes: [
+      frontendResourceId
+    ]
+    evaluationFrequency: 'PT1M'
+    windowSize: 'PT5M'
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          name: 'highFrontendLatency'
+          metricName: 'ResponseTime'
+          metricNamespace: 'microsoft.app/containerapps'
+          operator: 'GreaterThan'
+          threshold: 2000
           timeAggregation: 'Average'
           criterionType: 'StaticThresholdCriterion'
         }

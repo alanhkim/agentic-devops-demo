@@ -3,6 +3,9 @@ targetScope = 'subscription'
 @description('Principal ID of the managed identity to assign roles to')
 param principalId string
 
+@description('Suffix to make role assignment names unique across module instantiations')
+param nameSuffix string = ''
+
 // Subscription-scoped RBAC for the SRE Agent managed identity
 var roles = [
   {
@@ -27,8 +30,17 @@ var roles = [
   }
 ]
 
-resource roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in roles: {
+resource roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in roles: if (empty(nameSuffix)) {
   name: guid(subscription().id, principalId, role.id)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource suffixedRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in roles: if (!empty(nameSuffix)) {
+  name: guid(subscription().id, principalId, role.id, nameSuffix)
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: principalId

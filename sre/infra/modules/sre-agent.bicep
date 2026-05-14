@@ -61,3 +61,4 @@ output agentName string = sreAgent.name
 output agentId string = sreAgent.id
 output agentEndpoint string = sreAgent.properties.agentEndpoint
 output agentPortalUrl string = 'https://sre.azure.com'
+output systemAssignedPrincipalId string = sreAgent.identity.principalId

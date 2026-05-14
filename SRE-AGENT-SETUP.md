@@ -99,9 +99,12 @@ The SRE Agent is deployed from the `sre/` directory using its own `azd` project 
 | Action Group | `Microsoft.Insights/actionGroups` | Alert notification target |
 | Alert: HTTP 5xx Spike | `Microsoft.Insights/metricAlerts` | Severity 2 — backend error rate |
 | Alert: Container Restart | `Microsoft.Insights/metricAlerts` | Severity 1 — OOM/crash detection |
-| Alert: High Response Time | `Microsoft.Insights/metricAlerts` | Severity 3 — latency monitoring |
+| Alert: High Response Time (Backend) | `Microsoft.Insights/metricAlerts` | Severity 3 — backend latency monitoring |
+| Alert: High Response Time (Frontend) | `Microsoft.Insights/metricAlerts` | Severity 3 — frontend latency monitoring |
 
 ### RBAC Roles Assigned (Subscription Scope)
+
+Both the user-assigned managed identity AND the agent's system-assigned identity receive these roles. The system-assigned identity is what the SRE agent runtime uses for KQL queries against Log Analytics.
 
 | Role | Purpose |
 |---|---|
@@ -125,6 +128,9 @@ azd env set APP_RESOURCE_GROUP "$APP_RESOURCE_GROUP"
 
 # Set the backend container app name (from app deployment outputs)
 azd env set BACKEND_CONTAINER_APP_NAME "$(cd .. && azd env get-value backend_service_name)"
+
+# Set the frontend container app name (from app deployment outputs)
+azd env set FRONTEND_CONTAINER_APP_NAME "$(cd .. && azd env get-value frontend_service_name)"
 
 # Set the azure location (must be eastus2, swedencentral, or australiaeast)
 azd env set AZURE_LOCATION eastus2
@@ -310,6 +316,23 @@ The chaos engineering workflow uses [GitHub Agentic Workflows](https://github.co
 ```bash
 gh extension install github/gh-aw
 ```
+
+### Required Secret: `COPILOT_GITHUB_TOKEN`
+
+The workflow requires a `COPILOT_GITHUB_TOKEN` repository secret to authenticate the gh-aw engine with GitHub Copilot for AI inference.
+
+**Create a GitHub Personal Access Token (PAT):**
+
+1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**
+2. Create a new fine-grained token with **Resource owner** set to your user account, not the organization
+3. Under **Account permissions**, set **Copilot Requests** to **Read**
+4. Add it as a repository secret named `COPILOT_GITHUB_TOKEN`:
+
+```bash
+gh secret set COPILOT_GITHUB_TOKEN
+```
+
+> **Note**: The `COPILOT_GITHUB_TOKEN` is only used for Copilot AI inference and must belong to a user with an active Copilot license and inference access. All GitHub API operations (creating PRs, writing issues) are handled by the workflow's built-in `GITHUB_TOKEN`, which automatically carries `contents: write`, `issues: write`, and `pull-requests: write` permissions from the job's `permissions` block.
 
 ### Trigger via GitHub Issue
 
