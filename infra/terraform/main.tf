@@ -140,8 +140,8 @@ resource "azurerm_container_app" "backend" {
     container {
       name   = "backend"
       image  = var.service_backend_image_name
-      cpu    = var.container_cpu
-      memory = var.container_memory
+      cpu    = 0.1
+      memory = "0.2Gi"
 
       readiness_probe {
         transport = "HTTP"
