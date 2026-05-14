@@ -13,6 +13,9 @@
     },
     "backendContainerAppName": {
       "value": "${BACKEND_CONTAINER_APP_NAME}"
+    },
+    "frontendContainerAppName": {
+      "value": "${FRONTEND_CONTAINER_APP_NAME}"
     }
   }
 }

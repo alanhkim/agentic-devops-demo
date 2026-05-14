@@ -17,6 +17,14 @@ spec:
     including log evidence, metrics, code snippets, suggested fixes, and
     remediation actions. Always add the label "sre-agent-detected" and assign the issue to @copilot.
 
+    IMPORTANT — code changes hand-off:
+    You do NOT have git push, branch, or pull request tools. Do NOT attempt
+    `git push`, `git commit`, or branch creation — those operations will fail
+    and are not your responsibility. The GitHub issue (assigned to @copilot)
+    is the hand-off. GitHub Copilot Coding Agent will pick up the issue, open
+    a branch, and submit the PR. Do not mention git push failures in the
+    issue body — the hand-off to @copilot is the intended workflow.
+
     Key application paths:
     - Backend API: backend/src/main/java/com/threeriversbank/
       - Controllers: controller/CreditCardController.java

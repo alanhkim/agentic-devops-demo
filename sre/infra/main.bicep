@@ -13,6 +13,9 @@ param appResourceGroup string
 @description('Name of the backend container app to monitor (from app deployment output)')
 param backendContainerAppName string
 
+@description('Name of the frontend container app to monitor (from app deployment output)')
+param frontendContainerAppName string
+
 // SRE Agent gets its own resource group
 var resourceGroupName = 'rg-sre-${environmentName}'
 
@@ -35,14 +38,25 @@ module resources 'resources.bicep' = {
     location: location
     appResourceGroupId: appRg.id
     backendContainerAppName: backendContainerAppName
+    frontendContainerAppName: frontendContainerAppName
   }
 }
 
-// Subscription-scoped RBAC for the SRE Agent managed identity
+// Subscription-scoped RBAC for the user-assigned managed identity
 module subscriptionRbac 'modules/subscription-rbac.bicep' = {
   name: 'subscription-rbac'
   params: {
     principalId: resources.outputs.identityPrincipalId
+  }
+}
+
+// Subscription-scoped RBAC for the agent's system-assigned managed identity
+// (used by SRE agent runtime for Log Analytics queries and subscription reads)
+module subscriptionRbacSystem 'modules/subscription-rbac.bicep' = {
+  name: 'subscription-rbac-system'
+  params: {
+    principalId: resources.outputs.systemAssignedPrincipalId
+    nameSuffix: 'system'
   }
 }
 

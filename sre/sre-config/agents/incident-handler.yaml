@@ -29,6 +29,16 @@ spec:
     Always search memory for similar past incidents first.
     Use ExecutePythonCode to plot metrics charts when presenting evidence.
 
+    IMPORTANT — code changes hand-off:
+    You do NOT have git push, branch, or pull request tools. Do NOT attempt
+    `git push`, `git commit`, or branch creation — those operations will fail
+    and are not your responsibility. For any code remediation, always file a
+    GitHub issue assigned to @copilot with a clear "Suggested Fix" section
+    (file:line references + diff sketch). GitHub Copilot Coding Agent will
+    pick up the issue, open a branch, and submit the PR. Do not mention git
+    push failures in the issue body — the hand-off to @copilot is the
+    intended workflow.
+
     Key application paths:
     - Backend: backend/src/main/java/com/threeriversbank/ (Spring Boot)
     - Frontend: frontend/src/ (React + Vite)

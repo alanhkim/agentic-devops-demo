@@ -10,6 +10,9 @@ param appResourceGroupId string
 @description('Name of the backend container app to monitor')
 param backendContainerAppName string
 
+@description('Name of the frontend container app to monitor')
+param frontendContainerAppName string
+
 // ============================================================
 // Variables
 // ============================================================
@@ -50,6 +53,7 @@ module alertRules 'modules/alert-rules.bicep' = {
   params: {
     appResourceGroupId: appResourceGroupId
     backendContainerAppName: backendContainerAppName
+    frontendContainerAppName: frontendContainerAppName
     environmentName: environmentName
     appLocation: location
   }
@@ -62,3 +66,4 @@ output agentName string = sreAgent.outputs.agentName
 output agentEndpoint string = sreAgent.outputs.agentEndpoint
 output agentPortalUrl string = sreAgent.outputs.agentPortalUrl
 output identityPrincipalId string = identity.outputs.identityPrincipalId
+output systemAssignedPrincipalId string = sreAgent.outputs.systemAssignedPrincipalId
