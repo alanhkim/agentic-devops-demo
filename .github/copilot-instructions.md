@@ -99,7 +99,9 @@ npm run dev                    # Vite dev server on :5173
 ### Azure Container Apps
 - **Backend Resources**: 0.5 vCPU, 1GB RAM
 - **Frontend Resources**: 0.25 vCPU, 0.5GB RAM
-- **Environment Variables**: `BIAN_API_URL`, `H2_CONSOLE_ENABLED=false` (prod), `LOGGING_LEVEL=INFO`
+- **Environment Variables**: `BIAN_API_BASE_URL`, `SPRING_H2_CONSOLE_ENABLED=false` (prod), `VITE_API_BASE_URL` (frontend build-time), `LOGGING_LEVEL=INFO`
+- **Runtime Frontend Override**: `window.APP_CONFIG.API_BASE_URL` (for example in `frontend/public/config.js`) can override the frontend API endpoint at runtime without rebuilding.
+- **Reference**: `README.md` documents the correct environment variable names and usage examples.
 - **CI/CD**: GitHub Actions workflow at `.github/workflows/build-deploy.yml`
 
 ## Common Pitfalls to Avoid
